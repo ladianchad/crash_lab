@@ -1,19 +1,19 @@
-cmd : 150
+cmd : 100
 ID_1 : 0
 ID_2 : 0
 delay : 1500
 ---
-cmd : 150
-ID_1 : 500
-ID_2 : 500
-delay : 1500
----
-cmd : 150
+cmd : 100
 ID_1 : 1000
 ID_2 : 1000
 delay : 1500
 ---
-cmd : 150
+cmd : 100
+ID_1 : 500
+ID_2 : 1000
+delay : 1500
+---
+cmd : 100
 ID_1 : 0
 ID_2 : 0
 delay : 1500
