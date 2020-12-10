@@ -1,0 +1,8 @@
+cmd : 10 ID_1 : 1000 ID_2 : 1000
+delay : 100
+cmd : 10 ID_1 : 1500 ID_2 : 200
+delay : 100
+cmd : 10 ID_1 : 1000 ID_2 : 1000
+delay : 10
+cmd : 10 ID_1 : 1000 ID_2 : 1000
+delay : 10
