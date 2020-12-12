@@ -6,6 +6,8 @@
 #include "std_msgs/Float32MultiArray.h"
 #include "std_msgs/Float32.h"
 #include "std_msgs/Empty.h"
+#include "panda_msgs/tilt.h"
+#include "std_msgs/UInt16.h"
 #include <stdlib.h>
 #include <time.h>
 using namespace std;
@@ -18,15 +20,22 @@ void start_fun(const std_msgs::Empty& msg);
 void motor_pub(double l_sp,double r_sp,double duration);
 ros::ServiceClient *client;
 ros::Publisher *speed_pub ;
+ros::Publisher *tilt_pub;
+ros::Publisher *camera_pub;
 int robot_state = 1;
-
+panda_msgs::tilt tilt_msg;
+std_msgs::UInt16 camera_servo_msgs;
 int main(int argc,char** argv){
 	ros::init(argc,argv,"ROBOT_CORE");
 	ros::NodeHandle nh;
 	ros::ServiceClient Depth_cl = nh.serviceClient<panda_msgs::Depth>("depth_server");
 	client = &Depth_cl;
 	ros::Publisher sp_pub = nh.advertise<std_msgs::Float32MultiArray>("/speed_set", 1);
+	ros::Publisher t_pub = nh.advertise<panda_msgs::tilt>("/tilting/tilt", 1);
+	ros::Publisher s_pub = nh.advertise<std_msgs::UInt16>("/servo", 1);
 	speed_pub = &sp_pub;
+	tilt_pub = &t_pub;
+	camera_pub = &s_pub;
 	ros::Subscriber sub1 = nh.subscribe("/end_core", 1 ,end_fun);
 	ros::Subscriber sub2 = nh.subscribe("/start_core", 1 ,start_fun);
 	cout<<"ROBOT READY!!!"<<endl;
@@ -64,7 +73,17 @@ void normal_todo(){
 	if(client->call(srv)){
 		cout<<"LEFT SPEED : "<<srv.response.left<<" RIGHT SPEED : "<<srv.response.right<<endl;
 		if(srv.response.left==0 && srv.response.right==0){
+			tilt_msg.ID = 1;
+			tilt_msg.Position = 120;
+			tilt_pub->publish(tilt_msg);
+			camera_servo_msgs.data = 45;
+			camera_pub->publish(camera_servo_msgs);
 			motor_pub(srv.response.left,srv.response.right,7);
+			tilt_msg.ID = 1;
+			tilt_msg.Position = 660;
+			tilt_pub->publish(tilt_msg);
+			camera_servo_msgs.data = 10;
+			camera_pub->publish(camera_servo_msgs);
 			motor_pub(-20,20,2);
 			go_time = time(NULL);
 		}
@@ -116,6 +135,11 @@ void normal_todo(){
 
 void start_todo(){
 	motor_pub(0,0,0.1);
+	tilt_msg.ID = 1;
+	tilt_msg.Position = 660;
+	tilt_pub->publish(tilt_msg);
+	camera_servo_msgs.data = 10;
+	camera_pub->publish(camera_servo_msgs);
 }
 
 void motor_pub(double l_sp,double r_sp,double duration){

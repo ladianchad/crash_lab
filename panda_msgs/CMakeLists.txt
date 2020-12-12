@@ -13,12 +13,12 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
   FILES
   Yolo.msg
+  tilt.msg
 )
 
 add_service_files(
   FILES
   Depth.srv
-  tilt.srv
   motion.srv
 )
 
