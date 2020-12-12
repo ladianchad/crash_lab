@@ -18,6 +18,8 @@ void end_fun(const std_msgs::Empty& msg);
 void start_todo();
 void start_fun(const std_msgs::Empty& msg);
 void motor_pub(double l_sp,double r_sp,double duration);
+void stop(double l_pre,double r_pre,double time);
+
 ros::ServiceClient *client;
 ros::Publisher *speed_pub ;
 ros::Publisher *tilt_pub;
@@ -84,12 +86,12 @@ void normal_todo(){
 			tilt_pub->publish(tilt_msg);
 			camera_servo_msgs.data = 10;
 			camera_pub->publish(camera_servo_msgs);
-			motor_pub(-20,20,2);
+			motor_pub(-10,10,2);
 			go_time = time(NULL);
 		}
-		else if(srv.response.left == -20 && srv.response.right == 20){
+		else if(srv.response.left == -10 && srv.response.right == 10){
+			stop(0,0,1);
 			motor_pub(srv.response.left,srv.response.right,1.5);
-			motor_pub(0,0,0.5);
 			go_time = time(NULL);
 		}
 		else{
@@ -106,11 +108,11 @@ void normal_todo(){
 				if((random_look%10 == 0 || look_up) && now_time - looking_time > 10){
 					cout<<"ROBOT LOOK UP!!"<<endl;
 					static int count = 1;
-					motor_pub(0,0,0.5);
+					stop(srv.response.left,srv.response.right,1);
 					motor_pub(count*20,-count*20,0.5);
-					motor_pub(0,0,0.5);
+					stop(count*20,-count*20,1);
 					motor_pub(-count*20,count*20,0.5);
-					motor_pub(0,0,0.5);
+					stop(-count*20,count*20,1);
 					count = count * -1;
 					if(!look_up)
 						look_up = true;
@@ -123,6 +125,7 @@ void normal_todo(){
 					if(now_time -  go_time > 15){
 						cout<<"ROBOT TURN"<<endl;
 						go_time = time(NULL);
+						stop(srv.response.left,srv.response.right,1);
 						motor_pub(-15,15,1.5);
 					}
 					else
@@ -150,3 +153,13 @@ void motor_pub(double l_sp,double r_sp,double duration){
 	speed_pub->publish(speed_msg);
 	ros::Duration(duration).sleep();
 }
+
+void stop(double l_pre,double r_pre,double time){
+	double l_step = l_pre/10;
+	double r_step = r_pre/10;
+	double time_step = time/10;
+	for(int i=0;i<10;i++){
+		motor_pub(l_pre - l_step*(i+1),r_pre - r_step*(i+1),time_step);
+	}
+}
+

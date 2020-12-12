@@ -84,8 +84,8 @@ bool operate(panda_msgs::Depth::Request &req,panda_msgs::Depth::Response &res){
 	double min_sector[5] {};
 	double sig[5] {};
 	double left_velo,right_velo;
-	left_velo = 50;
-	right_velo = 50;
+	left_velo = 30;
+	right_velo = 30;
 	for(int i = 0;i<5;i++){
 		double min = 3000;
 		for(int j =0;j<3;j++){
@@ -117,8 +117,8 @@ bool operate(panda_msgs::Depth::Request &req,panda_msgs::Depth::Response &res){
 		res.left = left_weight*left_velo;
 		res.right = right_weight*right_velo;
 		if(res.right == 0 && res.left == 0){
-			res.left = -20;
-			res.right = 20;
+			res.left = -10;
+			res.right = 10;
 		}
 		res.result = false;
 	}
@@ -130,13 +130,13 @@ bool operate(panda_msgs::Depth::Request &req,panda_msgs::Depth::Response &res){
 			right_velo = 15*(1/(1+pow(2.7,1-abs(person.angle))));
 		}
 		else{
-			left_velo = 15*(1/(1+pow(2.7,1-abs(person.angle))));
-			right_velo = -15*(1/(1+pow(2.7,1-abs(person.angle))));
+			left_velo = 10*(1/(1+pow(2.7,1-abs(person.angle))));
+			right_velo = -10*(1/(1+pow(2.7,1-abs(person.angle))));
 		}
 		cout<<"LEFT VELO : "<<left_velo;
 		cout<<" RIGHT VELO : "<<right_velo<<endl;
-		left_velo += 40;
-		right_velo += 40;
+		left_velo += 20;
+		right_velo += 20;
 		left_weight = (1/(1+pow(2.7,left_weight))-0.5)*2;
 		if(left_weight < 0)
 			left_weight = 0;
